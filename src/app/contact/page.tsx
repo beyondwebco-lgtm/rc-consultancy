@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { companyData } from "@/data/company";
 import { ContactForm } from "@/components/ContactForm";
 import { SectionHeading } from "@/components/SectionHeading";
+import { InstagramIcon } from "@/components/InstagramIcon";
 import {
   MapPin,
   Phone,
@@ -115,10 +116,27 @@ export default function ContactPage() {
                       </p>
                     </div>
                   </div>
+
+                  <div className="flex items-start gap-3 border-t border-[#E5E9F0] pt-4">
+                    <InstagramIcon className="h-5 w-5 text-[#E1306C] shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-[#0B2545]">Official Instagram</p>
+                      <p className="mt-1">
+                        <a
+                          href={companyData.contact.instagram}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-medium text-[#E1306C] hover:underline"
+                        >
+                          {companyData.contact.instagramHandle}
+                        </a>
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Direct WhatsApp Call to Action */}
-                <div className="border-t border-[#E5E9F0] pt-5">
+                <div className="border-t border-[#E5E9F0] pt-5 space-y-2.5">
                   <a
                     href={companyData.contact.whatsappHref}
                     target="_blank"
@@ -127,6 +145,16 @@ export default function ContactPage() {
                   >
                     <MessageCircle className="h-4 w-4" />
                     <span>Quick Chat on WhatsApp</span>
+                  </a>
+
+                  <a
+                    href={companyData.contact.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#E1306C]/30 bg-[#FDF2F4] px-4 py-2.5 text-xs font-semibold text-[#E1306C] hover:bg-[#FCE7EB] transition-colors"
+                  >
+                    <InstagramIcon className="h-4 w-4" />
+                    <span>Follow on Instagram</span>
                   </a>
                 </div>
               </div>

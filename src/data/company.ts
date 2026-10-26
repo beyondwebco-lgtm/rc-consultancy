@@ -5,10 +5,28 @@ export const companyData = {
   established: "2026",
   founder: {
     name: "Rohit Ramdas Chaher",
-    designation: "Founder",
+    designation: "Company: RC CONSULTANCY",
+    photo: "/images/rohit-chaher.jpg",
     shortBio:
       "Overseeing advisory and documentation operations at RC CONSULTANCY with a steadfast focus on regulatory accuracy, verified trade filing, and transparent client guidance.",
   },
+  stats: [
+    {
+      label: "Experience",
+      value: "8 months+",
+      description: "Dedicated foreign trade & compliance consultancy",
+    },
+    {
+      label: "Documents Completed",
+      value: "250+",
+      description: "Accurate statutory filings & certifications",
+    },
+    {
+      label: "Business Clients Served",
+      value: "50+",
+      description: "Exporters, importers & manufacturing units",
+    },
+  ],
   address: {
     street: "FLAT NO. 002, B.S. MALI APARTMENT, KALHER PADA, KALHER",
     city: "BHIWANDI, THANE",
@@ -27,6 +45,8 @@ export const companyData = {
     email: "rc.consultancy@outlook.com",
     emailHref: "mailto:rc.consultancy@outlook.com",
     website: "https://rcconsultancy.co.in",
+    instagram: "https://www.instagram.com/rcconsultanty?vrfl=bW5qaWhrejRqOWJ3",
+    instagramHandle: "@rcconsultanty",
   },
   workingHours: {
     days: "Monday to Saturday",

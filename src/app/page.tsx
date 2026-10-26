@@ -2,8 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { companyData } from "@/data/company";
 import { servicesData } from "@/data/services";
+import { documentationCategories } from "@/data/documentationCategories";
 import { ServiceCard } from "@/components/ServiceCard";
 import { SectionHeading } from "@/components/SectionHeading";
+import { InstagramIcon } from "@/components/InstagramIcon";
 import {
   ArrowRight,
   MessageCircle,
@@ -18,6 +20,10 @@ import {
   MapPin,
   Calendar,
   Building,
+  Award,
+  Layers,
+  Clock,
+  Users,
 } from "lucide-react";
 
 export default function HomePage() {
@@ -81,37 +87,53 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col">
-      {/* 1. HERO SECTION */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#F7F9FB] to-white py-16 sm:py-24 lg:py-28">
-        <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-16">
-            {/* Left Content */}
-            <div className="lg:col-span-7">
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#E5E9F0] bg-white px-3.5 py-1.5 shadow-2xs">
-                <span className="flex h-2 w-2 rounded-full bg-[#0E9AA7]" />
-                <span className="text-xs font-semibold text-[#0B2545]">
+      {/* 1. HERO MAIN BANNER SECTION (As requested in user instructions) */}
+      <section className="relative w-full overflow-hidden bg-[#07192F] text-white">
+        {/* Banner Image with high-contrast gradient overlays for desktop and mobile */}
+        <div className="relative min-h-[480px] sm:min-h-[540px] lg:min-h-[580px] w-full flex items-center">
+          <Image
+            src="/images/hero-banner.jpg"
+            alt="Commercial cargo container ship at deepwater port harbor during sunset"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center"
+          />
+          {/* Multi-layered cinematic gradient overlay to ensure text is crisply legible on any device */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#07192F]/95 via-[#0B2545]/85 to-[#07192F]/60 sm:via-[#0B2545]/75" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#07192F] via-transparent to-black/30" />
+
+          {/* Banner Hero Content */}
+          <div className="relative z-10 mx-auto max-w-[1240px] px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+            <div className="max-w-2xl sm:max-w-3xl">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 backdrop-blur-md">
+                <span className="flex h-2 w-2 rounded-full bg-[#0E9AA7] animate-pulse" />
+                <span className="text-xs font-semibold text-slate-200 uppercase tracking-wider">
                   Import Export & Regulatory Compliance
                 </span>
               </div>
 
-              <h1 className="mt-6 font-heading text-3xl font-extrabold tracking-tight text-[#0B2545] sm:text-5xl sm:leading-tight lg:text-[52px]">
-                Import Export & Compliance,{" "}
-                <span className="text-[#0E9AA7]">Made Simple.</span>
+              {/* Prominent Banner Heading */}
+              <h1 className="mt-5 font-heading text-3xl font-extrabold tracking-tight text-white drop-shadow-md sm:text-5xl sm:leading-tight lg:text-6xl">
+                Welcome to{" "}
+                <span className="text-[#0E9AA7] bg-gradient-to-r from-[#0E9AA7] to-[#40C9FF] bg-clip-text text-transparent">
+                  RC CONSULTANCY
+                </span>
               </h1>
 
-              <p className="mt-5 text-base font-medium text-[#0B2545]/90 sm:text-lg">
+              <p className="mt-4 text-base font-medium text-slate-200 drop-shadow sm:text-xl">
                 {companyData.tagline}
               </p>
 
-              <p className="mt-2 text-sm leading-relaxed text-[#64748B] sm:text-base">
-                We assist exporters, importers, and manufacturers with registrations, statutory documentation, and regulatory compliance to streamline their cross-border operations.
+              <p className="mt-3 text-xs leading-relaxed text-slate-300 sm:text-sm max-w-xl">
+                Professional guidance for DGFT licensing, customs documentation, RCMC councils, EPR environmental filings, and bilateral trade agreements.
               </p>
 
               {/* Action Buttons */}
-              <div className="mt-8 flex flex-wrap items-center gap-4">
+              <div className="mt-8 flex flex-wrap items-center gap-3.5">
                 <Link
                   href="/contact"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0B2545] px-6 py-3.5 text-sm font-semibold text-white shadow-xs transition-all hover:bg-[#133966] hover:shadow-md active:scale-98"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0E9AA7] px-6 py-3.5 text-xs sm:text-sm font-semibold text-white shadow-lg transition-all hover:bg-[#0c8894] hover:shadow-cyan-900/40 active:scale-98"
                 >
                   <span>Get Free Consultation</span>
                   <ArrowRight className="h-4 w-4" />
@@ -121,60 +143,34 @@ export default function HomePage() {
                   href={companyData.contact.whatsappHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#E5E9F0] bg-white px-6 py-3.5 text-sm font-semibold text-[#0B2545] shadow-2xs transition-all hover:border-[#25D366] hover:bg-[#F7F9FB] active:scale-98"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-5 py-3.5 text-xs sm:text-sm font-semibold text-white backdrop-blur-md transition-all hover:bg-white/20 hover:border-emerald-400 active:scale-98"
                 >
                   <MessageCircle className="h-4 w-4 text-[#25D366]" />
                   <span>WhatsApp Us</span>
                 </a>
+
+                <Link
+                  href="/services"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-black/20 px-4 py-3.5 text-xs sm:text-sm font-semibold text-slate-200 backdrop-blur-sm transition-all hover:bg-white/10"
+                >
+                  <Layers className="h-4 w-4 text-[#0E9AA7]" />
+                  <span>Documentation Services</span>
+                </Link>
               </div>
 
-              {/* Verified Trust points */}
-              <div className="mt-10 flex flex-wrap items-center gap-6 border-t border-[#E5E9F0] pt-6 text-xs text-[#64748B]">
-                <div className="flex items-center gap-2">
+              {/* Fast trust ticks */}
+              <div className="mt-8 flex flex-wrap items-center gap-4 text-[11px] sm:text-xs text-slate-300">
+                <div className="flex items-center gap-1.5">
                   <CheckCircle className="h-4 w-4 text-[#0E9AA7]" />
-                  <span>DGFT & Customs Focused</span>
+                  <span>Verified DGFT & Customs Support</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <CheckCircle className="h-4 w-4 text-[#0E9AA7]" />
-                  <span>Pre-filing Audit</span>
+                  <span>Transparent Pre-filing Audit</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <CheckCircle className="h-4 w-4 text-[#0E9AA7]" />
-                  <span>Direct Advisor Contact</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Visual Image Frame */}
-            <div className="relative lg:col-span-5">
-              <div className="relative mx-auto max-w-md lg:max-w-none">
-                <div className="relative aspect-[4/3] sm:aspect-[5/4] w-full overflow-hidden rounded-2xl border border-[#E5E9F0] bg-[#F7F9FB] shadow-md">
-                  <Image
-                    src="https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=1200&q=80"
-                    alt="Commercial container ship at port handling international freight and cargo"
-                    fill
-                    priority
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 40vw"
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0B2545]/40 via-transparent to-transparent" />
-                </div>
-
-                {/* Soft overlay badge */}
-                <div className="absolute -bottom-5 left-4 right-4 sm:left-6 sm:right-auto rounded-xl border border-white/80 bg-white/95 p-4 shadow-lg backdrop-blur-md">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#E7F6F7] text-[#0E9AA7]">
-                      <MapPin className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-[#0B2545]">
-                        Est. {companyData.established}
-                      </p>
-                      <p className="text-xs text-[#64748B]">
-                        Bhiwandi, Maharashtra · India
-                      </p>
-                    </div>
-                  </div>
+                  <span>Direct Professional Support</span>
                 </div>
               </div>
             </div>
@@ -182,35 +178,121 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 2. SERVICES PREVIEW (10 minimal cards) */}
-      <section className="bg-white py-20 sm:py-24" id="services">
-        <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
+      {/* 2. PROVEN TRACK RECORD / STATS SECTION (User requested: Experience 8 months+, Documents Completed 250+, Business Clients Served 50+) */}
+      <section className="relative z-20 -mt-6 sm:-mt-8 mx-auto max-w-[1240px] px-4 sm:px-6 lg:px-8 w-full">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 rounded-2xl border border-[#E5E9F0] bg-white p-4 sm:p-6 shadow-xl">
+          {companyData.stats.map((stat, idx) => (
+            <div
+              key={stat.label}
+              className={`flex items-center gap-4 p-3 sm:p-4 ${
+                idx !== 0 ? "sm:border-l sm:border-[#E5E9F0]" : ""
+              }`}
+            >
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#E7F6F7] text-[#0E9AA7]">
+                {idx === 0 && <Clock className="h-6 w-6" />}
+                {idx === 1 && <FileCheck className="h-6 w-6" />}
+                {idx === 2 && <Users className="h-6 w-6" />}
+              </div>
+              <div>
+                <div className="flex items-baseline gap-1">
+                  <span className="font-heading text-2xl sm:text-3xl font-extrabold text-[#0B2545]">
+                    {stat.value}
+                  </span>
+                </div>
+                <p className="text-xs font-bold text-[#0B2545] uppercase tracking-wide">
+                  {stat.label}
+                </p>
+                <p className="text-[11px] text-[#64748B] leading-tight mt-0.5">
+                  {stat.description}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 3. DOCUMENTATION SERVICES PREVIEW (Categorized Directory Preview) */}
+      <section className="bg-white py-16 sm:py-24" id="services">
+        <div className="mx-auto max-w-[1240px] px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
             <SectionHeading
               badge="Our Services"
-              title="Comprehensive Import-Export Solutions"
-              subtitle="Focused strictly on statutory trade registrations, portal filings, and cargo documentation support."
+              title="Documentation Services Directory"
+              subtitle="Statutory registrations, foreign trade agreements, export promotion councils, and specialized cargo documentation."
             />
             <Link
               href="/services"
               className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#0E9AA7] hover:text-[#0B2545] transition-colors"
             >
-              <span>Explore all services in detail</span>
+              <span>Explore full directory</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
 
+          {/* Quick Categories Overview Grid */}
           <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {servicesData.map((service) => (
-              <ServiceCard key={service.slug} service={service} />
+            {documentationCategories.slice(0, 6).map((cat) => (
+              <div
+                key={cat.id}
+                className="group rounded-2xl border border-[#E5E9F0] bg-[#FAFBFC] p-6 shadow-2xs transition-all hover:border-[#0E9AA7]/50 hover:bg-white hover:shadow-md flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between">
+                    <span className="inline-block rounded-lg bg-[#FAF0F0] px-2.5 py-1 text-[11px] font-bold text-[#991B1B] uppercase tracking-wider">
+                      {cat.title}
+                    </span>
+                    <span className="text-[11px] font-semibold text-[#64748B]">
+                      {cat.items.length} Services
+                    </span>
+                  </div>
+
+                  <p className="mt-3 text-xs text-[#64748B] leading-relaxed">
+                    {cat.shortDesc}
+                  </p>
+
+                  <ul className="mt-4 space-y-1.5 border-t border-[#E5E9F0] pt-3 text-xs text-[#334155]">
+                    {cat.items.slice(0, 4).map((item, idx) => (
+                      <li key={idx} className="flex items-center gap-2">
+                        <span className="h-1.5 w-1.5 rounded-full bg-[#0E9AA7]" />
+                        <span className="line-clamp-1">{item}</span>
+                      </li>
+                    ))}
+                    {cat.items.length > 4 && (
+                      <li className="text-[11px] font-medium text-[#0E9AA7] pt-1">
+                        + {cat.items.length - 4} more in this category
+                      </li>
+                    )}
+                  </ul>
+                </div>
+
+                <div className="mt-6 pt-3 border-t border-[#E5E9F0]">
+                  <Link
+                    href={`/services#${cat.id}`}
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-[#0B2545] group-hover:text-[#0E9AA7] transition-colors"
+                  >
+                    <span>View Category Details</span>
+                    <ArrowRight className="h-3 w-3" />
+                  </Link>
+                </div>
+              </div>
             ))}
+          </div>
+
+          <div className="mt-8 text-center">
+            <Link
+              href="/services"
+              className="inline-flex items-center gap-2 rounded-xl bg-[#0B2545] px-6 py-3 text-xs font-semibold text-white shadow-xs hover:bg-[#133966] transition-colors"
+            >
+              <span>View All Documentation Categories & Portals</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* 3. WHY RC (4 Honest Pillars) */}
+      {/* 4. WHY RC (4 Honest Pillars) */}
       <section className="border-t border-[#E5E9F0] bg-[#F7F9FB] py-20 sm:py-24">
-        <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[1240px] px-4 sm:px-6 lg:px-8">
           <SectionHeading
             badge="Why Work With Us"
             title="A Pragmatic, Compliance-First Approach"
@@ -242,9 +324,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 4. HOW IT WORKS (4 Steps Timeline) */}
+      {/* 5. HOW IT WORKS (4 Steps Timeline) */}
       <section className="bg-white py-20 sm:py-24">
-        <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[1240px] px-4 sm:px-6 lg:px-8">
           <SectionHeading
             badge="Simple Process"
             title="How We Work With You"
@@ -254,7 +336,6 @@ export default function HomePage() {
 
           {/* Timeline */}
           <div className="mt-16 grid grid-cols-1 gap-8 md:grid-cols-4 relative">
-            {/* Desktop timeline line */}
             <div className="hidden md:block absolute top-7 left-12 right-12 h-0.5 bg-[#E5E9F0] z-0" />
 
             {workflowSteps.map((step) => {
@@ -280,45 +361,45 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 5. IMAGE BAND */}
-      <section className="relative overflow-hidden bg-[#0B2545] py-24 sm:py-32">
-        <Image
-          src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=2000&q=80"
-          alt="Modern logistics freight container terminal supporting global maritime trade"
-          fill
-          sizes="100vw"
-          className="object-cover opacity-20"
-        />
-        <div className="relative mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8 text-center text-white">
-          <p className="text-xs font-bold uppercase tracking-widest text-[#0E9AA7]">
-            Global Commerce Support
-          </p>
-          <h2 className="mt-3 font-heading text-2xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
-            Supporting businesses in global trade.
-          </h2>
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-slate-300 sm:text-base">
-            Providing reliable documentation, proactive compliance guidance, and seamless portal processing for traders in India and international supply networks.
-          </p>
-        </div>
-      </section>
-
-      {/* 6. FOUNDER CARD */}
+      {/* 6. FOUNDER CARD SECTION (As updated in client instructions: Photo + Designation Company: RC CONSULTANCY) */}
       <section className="border-t border-[#E5E9F0] bg-[#F7F9FB] py-20 sm:py-24">
-        <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-3xl rounded-2xl border border-[#E5E9F0] bg-white p-8 sm:p-10 shadow-xs">
+        <div className="mx-auto max-w-[1240px] px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-3xl rounded-2xl border border-[#E5E9F0] bg-white p-6 sm:p-10 shadow-xs">
             <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
-              <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-[#0B2545] text-white font-heading text-2xl font-bold">
-                RC
+              {/* Founder Professional Photo replacing the RC placeholder */}
+              <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-2xl border-2 border-[#E5E9F0] bg-[#F7F9FB] shadow-xs">
+                <Image
+                  src={companyData.founder.photo}
+                  alt={companyData.founder.name}
+                  width={112}
+                  height={112}
+                  className="h-full w-full object-cover"
+                />
               </div>
+
               <div className="flex-1">
-                <span className="text-xs font-bold uppercase tracking-wider text-[#0E9AA7]">
-                  Leadership & Guidance
-                </span>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#0E9AA7]">
+                    Trade Advisor & Operations
+                  </span>
+                  {/* Official Instagram Link */}
+                  <a
+                    href={companyData.contact.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-[#E1306C]/30 bg-[#FDF2F4] px-3 py-1 text-xs font-semibold text-[#E1306C] hover:bg-[#FCE7EB] transition-colors"
+                  >
+                    <InstagramIcon className="h-3.5 w-3.5" />
+                    <span>Follow on Instagram</span>
+                  </a>
+                </div>
+
                 <h3 className="mt-1 font-heading text-xl font-bold text-[#0B2545] sm:text-2xl">
                   {companyData.founder.name}
                 </h3>
-                <p className="text-xs font-medium text-[#64748B]">
-                  {companyData.founder.designation} · {companyData.name}
+                {/* Updated designation: Company: RC CONSULTANCY, removing 'Founder' as requested */}
+                <p className="text-xs font-semibold text-[#0B2545]">
+                  {companyData.founder.designation}
                 </p>
                 <p className="mt-3 text-xs leading-relaxed text-[#334155] sm:text-sm">
                   {companyData.founder.shortBio}
@@ -333,21 +414,21 @@ export default function HomePage() {
               </div>
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-[#0B2545]" />
-                <span>Founded {companyData.established}</span>
+                <span>Established {companyData.established}</span>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 7. CTA BAND (Navy background) */}
+      {/* 7. CTA BAND */}
       <section className="bg-[#0B2545] py-16 sm:py-20 text-white">
-        <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8 text-center">
+        <div className="mx-auto max-w-[1240px] px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="font-heading text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl text-white">
             Need help with import-export registration or compliance?
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-slate-300">
-            Get straightforward advice from our trade documentation specialist. No automated bots, direct professional support.
+            Get straightforward advice from our trade documentation specialist. Direct guidance, verified filing.
           </p>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
@@ -367,6 +448,16 @@ export default function HomePage() {
             >
               <MessageCircle className="h-4 w-4" />
               <span>Chat on WhatsApp</span>
+            </a>
+
+            <a
+              href={companyData.contact.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-xl border border-white/30 bg-white/10 px-6 py-3.5 text-sm font-semibold text-white backdrop-blur-md transition-all hover:bg-white/20 active:scale-98"
+            >
+              <InstagramIcon className="h-4 w-4" />
+              <span>Instagram Profile</span>
             </a>
           </div>
         </div>

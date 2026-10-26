@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { companyData } from "@/data/company";
 import { SectionHeading } from "@/components/SectionHeading";
+import { InstagramIcon } from "@/components/InstagramIcon";
 import {
   ArrowRight,
   ShieldCheck,
@@ -12,12 +13,15 @@ import {
   MessageCircle,
   FileText,
   CheckCircle2,
+  Clock,
+  FileCheck,
+  Users,
 } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "About Us | RC CONSULTANCY",
   description:
-    "Learn about RC CONSULTANCY – Professional import export documentation and regulatory compliance consultancy based in Bhiwandi, Maharashtra. Founded by Rohit Ramdas Chaher.",
+    "Learn about RC CONSULTANCY – Professional import export documentation and regulatory compliance consultancy based in Bhiwandi, Maharashtra. Led by Rohit Ramdas Chaher.",
 };
 
 export default function AboutPage() {
@@ -25,7 +29,7 @@ export default function AboutPage() {
     <div className="flex flex-col">
       {/* Hero */}
       <section className="bg-gradient-to-b from-[#F7F9FB] to-white py-16 sm:py-20 border-b border-[#E5E9F0]">
-        <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[1240px] px-4 sm:px-6 lg:px-8">
           <SectionHeading
             badge="About RC CONSULTANCY"
             title="Dedicated Exclusively to Cross-Border Compliance"
@@ -34,9 +38,40 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* Stats Bar (8 months+, 250+ documents, 50+ clients) */}
+      <section className="bg-white py-8 border-b border-[#E5E9F0]">
+        <div className="mx-auto max-w-[1240px] px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+            {companyData.stats.map((stat, idx) => (
+              <div
+                key={stat.label}
+                className={`flex items-center gap-4 p-4 rounded-xl border border-[#E5E9F0] bg-[#FAFBFC]`}
+              >
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#E7F6F7] text-[#0E9AA7]">
+                  {idx === 0 && <Clock className="h-6 w-6" />}
+                  {idx === 1 && <FileCheck className="h-6 w-6" />}
+                  {idx === 2 && <Users className="h-6 w-6" />}
+                </div>
+                <div>
+                  <span className="font-heading text-2xl font-extrabold text-[#0B2545]">
+                    {stat.value}
+                  </span>
+                  <p className="text-xs font-bold text-[#0B2545] uppercase tracking-wide">
+                    {stat.label}
+                  </p>
+                  <p className="text-[11px] text-[#64748B]">
+                    {stat.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Main Narrative & Mission */}
       <section className="bg-white py-16 sm:py-24">
-        <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[1240px] px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="lg:col-span-7 space-y-6">
               <h2 className="font-heading text-2xl font-bold text-[#0B2545] sm:text-3xl">
@@ -110,8 +145,22 @@ export default function AboutPage() {
                     <dd className="font-semibold text-[#0B2545]">{companyData.established}</dd>
                   </div>
                   <div className="flex justify-between border-b border-[#E5E9F0] pb-2">
-                    <dt className="text-[#64748B]">Founder</dt>
+                    <dt className="text-[#64748B]">Leadership</dt>
                     <dd className="font-semibold text-[#0B2545]">{companyData.founder.name}</dd>
+                  </div>
+                  <div className="flex justify-between border-b border-[#E5E9F0] pb-2">
+                    <dt className="text-[#64748B]">Social Profile</dt>
+                    <dd>
+                      <a
+                        href={companyData.contact.instagram}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-semibold text-[#E1306C] hover:underline inline-flex items-center gap-1"
+                      >
+                        <InstagramIcon className="h-3 w-3" />
+                        <span>{companyData.contact.instagramHandle}</span>
+                      </a>
+                    </dd>
                   </div>
                   <div className="flex justify-between border-b border-[#E5E9F0] pb-2">
                     <dt className="text-[#64748B]">Jurisdiction</dt>
@@ -128,29 +177,49 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Founder Section */}
+      {/* Leadership Section with Photo & Updated Designation */}
       <section className="border-t border-[#E5E9F0] bg-[#F7F9FB] py-16 sm:py-24">
-        <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[1240px] px-4 sm:px-6 lg:px-8">
           <SectionHeading
             badge="Leadership"
-            title="Founder & Principal Consultant"
+            title="Principal Consultant"
             subtitle="Direct responsibility for trade documentation accuracy and regulatory advisory."
           />
 
-          <div className="mt-10 mx-auto max-w-3xl rounded-2xl border border-[#E5E9F0] bg-white p-8 sm:p-10 shadow-xs">
+          <div className="mt-10 mx-auto max-w-3xl rounded-2xl border border-[#E5E9F0] bg-white p-6 sm:p-10 shadow-xs">
             <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
-              <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-[#0B2545] text-white font-heading text-2xl font-bold">
-                RC
+              {/* Photo */}
+              <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-2xl border-2 border-[#E5E9F0] bg-[#F7F9FB] shadow-xs">
+                <Image
+                  src={companyData.founder.photo}
+                  alt={companyData.founder.name}
+                  width={112}
+                  height={112}
+                  className="h-full w-full object-cover"
+                />
               </div>
+
               <div className="flex-1">
-                <span className="text-xs font-bold uppercase tracking-wider text-[#0E9AA7]">
-                  Founder
-                </span>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#0E9AA7]">
+                    Trade Advisory & Filing
+                  </span>
+                  <a
+                    href={companyData.contact.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-[#E1306C]/30 bg-[#FDF2F4] px-3 py-1 text-xs font-semibold text-[#E1306C] hover:bg-[#FCE7EB] transition-colors"
+                  >
+                    <InstagramIcon className="h-3.5 w-3.5" />
+                    <span>Instagram Profile</span>
+                  </a>
+                </div>
+
                 <h3 className="mt-1 font-heading text-2xl font-bold text-[#0B2545]">
                   {companyData.founder.name}
                 </h3>
-                <p className="text-xs font-medium text-[#64748B]">
-                  {companyData.founder.designation} · {companyData.name}
+                <p className="text-xs font-semibold text-[#0B2545]">
+                  {companyData.founder.designation}
                 </p>
                 <p className="mt-3 text-sm leading-relaxed text-[#334155]">
                   {companyData.founder.shortBio}
@@ -158,7 +227,7 @@ export default function AboutPage() {
               </div>
             </div>
 
-            <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-[#E5E9F0] pt-4 text-xs text-[#64748B]">
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-[#E5E9F0] pt-5 text-xs text-[#64748B]">
               <div className="flex items-center gap-2">
                 <Building2 className="h-4 w-4 text-[#0B2545]" />
                 <span>Office: Bhiwandi, Thane, Maharashtra</span>
@@ -172,32 +241,32 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Services link & CTA */}
-      <section className="bg-white py-16 sm:py-20 border-t border-[#E5E9F0]">
-        <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="font-heading text-2xl font-bold text-[#0B2545] sm:text-3xl">
-            Explore Our Comprehensive Services
+      {/* CTA */}
+      <section className="bg-[#0B2545] py-16 text-white text-center">
+        <div className="mx-auto max-w-[1240px] px-4 sm:px-6 lg:px-8">
+          <h2 className="font-heading text-2xl font-bold sm:text-3xl text-white">
+            Have questions about our documentation process?
           </h2>
-          <p className="mx-auto mt-2 max-w-xl text-sm text-[#64748B]">
-            From initial IEC issuance to port AD Code activation and packaging compliance, review our complete 10-point service suite.
+          <p className="mx-auto mt-3 max-w-xl text-sm text-slate-300">
+            Reach out directly to discuss your specific import-export paperwork requirements.
           </p>
-
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-            <Link
-              href="/services"
-              className="inline-flex items-center gap-2 rounded-xl bg-[#0B2545] px-6 py-3.5 text-sm font-semibold text-white shadow-xs hover:bg-[#133966]"
-            >
-              <FileText className="h-4 w-4" />
-              <span>View All 10 Services</span>
-            </Link>
-
+          <div className="mt-6 flex flex-wrap justify-center gap-4">
             <Link
               href="/contact"
-              className="inline-flex items-center gap-2 rounded-xl border border-[#E5E9F0] bg-white px-6 py-3.5 text-sm font-semibold text-[#0B2545] shadow-xs hover:bg-[#F7F9FB]"
+              className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-xs font-semibold text-[#0B2545] shadow-xs hover:bg-slate-100"
             >
-              <span>Contact Our Office</span>
-              <ArrowRight className="h-4 w-4" />
+              <span>Contact Us</span>
+              <ArrowRight className="h-3.5 w-3.5" />
             </Link>
+            <a
+              href={companyData.contact.whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-xl bg-[#25D366] px-6 py-3 text-xs font-semibold text-white shadow-xs hover:bg-[#20ba5a]"
+            >
+              <MessageCircle className="h-3.5 w-3.5" />
+              <span>WhatsApp Consultation</span>
+            </a>
           </div>
         </div>
       </section>

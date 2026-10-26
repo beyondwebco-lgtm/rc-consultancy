@@ -5,8 +5,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { servicesData } from "@/data/services";
+import { documentationCategories } from "@/data/documentationCategories";
 import { companyData } from "@/data/company";
-import { CheckCircle2, AlertCircle, Loader2, Send, Mail } from "lucide-react";
+import { CheckCircle2, AlertCircle, Loader2, Send, Mail, MessageCircle, ArrowRight } from "lucide-react";
 
 const contactSchema = z.object({
   fullName: z.string().min(2, "Full name must be at least 2 characters"),
@@ -25,6 +26,7 @@ type ContactFormData = z.infer<typeof contactSchema>;
 export function ContactForm({ preselectedService }: { preselectedService?: string }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [submittedData, setSubmittedData] = useState<ContactFormData | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const {
@@ -68,6 +70,7 @@ export function ContactForm({ preselectedService }: { preselectedService?: strin
         throw new Error(resData.error || "Failed to submit inquiry. Please try again.");
       }
 
+      setSubmittedData(data);
       setIsSuccess(true);
       reset();
     } catch (err: unknown) {
@@ -77,6 +80,14 @@ export function ContactForm({ preselectedService }: { preselectedService?: strin
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const getWhatsAppHrefForData = (data: ContactFormData | null) => {
+    if (!data) return companyData.contact.whatsappHref;
+    const text = encodeURIComponent(
+      `Hello RC CONSULTANCY (Rohit Chaher),\nI have submitted an inquiry on your website:\n\n*Name:* ${data.fullName}\n*Phone:* ${data.phone}\n*Email:* ${data.email}\n*Service:* ${data.service}\n\n*Details:*\n${data.message}`
+    );
+    return `https://wa.me/919322174270?text=${text}`;
   };
 
   const handleMailtoFallback = () => {
@@ -90,32 +101,48 @@ export function ContactForm({ preselectedService }: { preselectedService?: strin
 
   if (isSuccess) {
     return (
-      <div className="rounded-2xl border border-teal-200 bg-[#E7F6F7]/60 p-8 text-center sm:p-10">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#0E9AA7] text-white">
+      <div className="rounded-2xl border border-teal-200 bg-[#E7F6F7]/60 p-8 text-center sm:p-10 animate-in fade-in duration-300">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#0E9AA7] text-white shadow-md">
           <CheckCircle2 className="h-8 w-8" />
         </div>
         <h3 className="mt-4 font-heading text-xl font-bold text-[#0B2545]">
-          Inquiry Received Successfully
+          Inquiry Successfully Submitted!
         </h3>
         <p className="mx-auto mt-2 max-w-md text-sm text-[#334155] leading-relaxed">
-          Thank you for reaching out to <strong>RC CONSULTANCY</strong>. Our compliance advisor will review your requirement and get in touch within regular business hours.
+          Your inquiry has been logged and dispatched to <strong>rc.consultancy@outlook.com</strong>. Our principal consultant, <strong>Rohit Ramdas Chaher</strong>, will review your details promptly.
         </p>
+
+        {/* Instant WhatsApp Action for guaranteed immediate response */}
+        <div className="mt-6 mx-auto max-w-md rounded-xl bg-white p-4 border border-[#E5E9F0] shadow-xs text-left">
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#0B2545]">
+            <MessageCircle className="h-4 w-4 text-[#25D366]" />
+            <span>Need an immediate response?</span>
+          </div>
+          <p className="mt-1 text-xs text-[#64748B]">
+            Send a copy of your submitted inquiry directly to Rohit Chaher on WhatsApp to get instant confirmation:
+          </p>
+          <a
+            href={getWhatsAppHrefForData(submittedData)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-[#20ba5a] transition-colors"
+          >
+            <MessageCircle className="h-4 w-4" />
+            <span>Send Details to WhatsApp (+91 93221 74270)</span>
+          </a>
+        </div>
+
         <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
           <button
             type="button"
-            onClick={() => setIsSuccess(false)}
+            onClick={() => {
+              setIsSuccess(false);
+              setSubmittedData(null);
+            }}
             className="rounded-xl border border-[#E5E9F0] bg-white px-5 py-2.5 text-xs font-semibold text-[#0B2545] shadow-xs hover:bg-[#F7F9FB]"
           >
             Submit Another Request
           </button>
-          <a
-            href={companyData.contact.whatsappHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-xl bg-[#25D366] px-5 py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-[#20ba5a]"
-          >
-            WhatsApp Directly
-          </a>
         </div>
       </div>
     );
@@ -230,7 +257,7 @@ export function ContactForm({ preselectedService }: { preselectedService?: strin
             htmlFor="service"
             className="block text-xs font-semibold uppercase tracking-wider text-[#0B2545]"
           >
-            Required Service <span className="text-red-500">*</span>
+            Required Service / Category <span className="text-red-500">*</span>
           </label>
           <select
             id="service"
@@ -241,12 +268,21 @@ export function ContactForm({ preselectedService }: { preselectedService?: strin
             }`}
             {...register("service")}
           >
-            <option value="">Select an Import-Export Service</option>
-            {servicesData.map((svc) => (
-              <option key={svc.slug} value={svc.title}>
-                {svc.title}
-              </option>
-            ))}
+            <option value="">Select an Import-Export / Documentation Service</option>
+            <optgroup label="Core Statutory Services">
+              {servicesData.map((svc) => (
+                <option key={svc.slug} value={svc.title}>
+                  {svc.title}
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label="Documentation Categories">
+              {documentationCategories.map((cat) => (
+                <option key={cat.id} value={cat.title}>
+                  {cat.title} (All sub-services)
+                </option>
+              ))}
+            </optgroup>
           </select>
           {errors.service && (
             <p id="service-error" className="mt-1 text-xs text-red-600 flex items-center gap-1">
@@ -321,7 +357,7 @@ export function ContactForm({ preselectedService }: { preselectedService?: strin
             )}
           </button>
           <p className="mt-2.5 text-center text-xs text-[#64748B]">
-            We respect your privacy. No spam. Direct communication only.
+            All enquiries are delivered directly to Rohit Ramdas Chaher (rc.consultancy@outlook.com & WhatsApp).
           </p>
         </div>
       </div>
