@@ -11,24 +11,28 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, message: "Inquiry received." });
     }
 
-    if (!fullName || !phone || !email || !service || !message) {
+    if (!fullName || !phone) {
       return NextResponse.json(
-        { error: "Please fill in all required fields." },
+        { error: "Please provide your name and contact phone number." },
         { status: 400 }
       );
     }
 
+    const requestedService = service || "General Import-Export Consultation";
+    const userEmail = email || "Not specified";
+    const userMessage = message?.trim() || `Consultation requested for ${requestedService}`;
+
     const recipientEmail = "rc.consultancy@outlook.com";
-    const emailSubject = `[Inquiry] ${service} - ${fullName}`;
+    const emailSubject = `[Inquiry] ${requestedService} - ${fullName}`;
     const emailText = `New consultation inquiry received via rcconsultancy.co.in:
 
 Full Name: ${fullName}
 Phone: ${phone}
-Email: ${email}
-Service Requested: ${service}
+Email: ${userEmail}
+Service Requested: ${requestedService}
 
 Requirement Details:
-${message}
+${userMessage}
 
 Submission Timestamp: ${new Date().toISOString()}
 `;

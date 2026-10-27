@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, FieldErrors } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { servicesData } from "@/data/services";
@@ -17,17 +17,31 @@ import {
   ArrowRight,
   ShieldCheck,
   Check,
+  PhoneCall,
 } from "lucide-react";
 
 const contactSchema = z.object({
-  fullName: z.string().min(2, "Please enter your full name (at least 2 characters)"),
+  fullName: z
+    .string()
+    .trim()
+    .min(1, "Please enter your full name"),
   phone: z
     .string()
+    .trim()
     .min(10, "Please enter a valid 10-digit phone / WhatsApp number")
-    .regex(/^[0-9+\-\s()]+$/, "Please enter valid numeric phone format"),
-  email: z.string().email("Please enter a valid email address"),
-  service: z.string().min(1, "Please select an import-export service"),
-  message: z.string().min(5, "Please describe your requirement (at least 5 characters)"),
+    .refine(
+      (val) => val.replace(/[^0-9]/g, "").length >= 10,
+      "Please enter at least 10 digits for your phone number"
+    ),
+  email: z
+    .string()
+    .trim()
+    .min(1, "Please enter your email address")
+    .email("Please enter a valid email address (e.g. name@company.com)"),
+  service: z
+    .string()
+    .min(1, "Please select an import-export or documentation service"),
+  message: z.string().optional(),
   website_field_hp: z.string().optional(), // Honeypot field
 });
 
@@ -37,7 +51,8 @@ export function ContactForm({ preselectedService }: { preselectedService?: strin
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [submittedData, setSubmittedData] = useState<ContactFormData | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [submitErrorMessage, setSubmitErrorMessage] = useState<string | null>(null);
+  const [validationAttempted, setValidationAttempted] = useState(false);
 
   const {
     register,
@@ -47,6 +62,7 @@ export function ContactForm({ preselectedService }: { preselectedService?: strin
     formState: { errors },
   } = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
+    mode: "onTouched",
     defaultValues: {
       fullName: "",
       phone: "",
@@ -58,31 +74,50 @@ export function ContactForm({ preselectedService }: { preselectedService?: strin
   });
 
   const generateWhatsAppUrl = (data: Partial<ContactFormData>) => {
+    const serviceName = data.service || "Import-Export Consultation";
+    const clientName = data.fullName || "Prospective Client";
+    const clientPhone = data.phone || "Not provided";
+    const clientEmail = data.email || "Not provided";
+    const clientMessage =
+      data.message?.trim() || `Inquiry for ${serviceName}. Please advise on procedure & documentation.`;
+
     const text = encodeURIComponent(
-      `Hello RC CONSULTANCY (Rohit Chaher),\nI am submitting a consultation inquiry:\n\n*Name:* ${data.fullName || "Prospective Client"}\n*Phone:* ${data.phone || "Not provided"}\n*Email:* ${data.email || "Not provided"}\n*Service:* ${data.service || "General Import-Export Consultation"}\n\n*Requirement Details:*\n${data.message || "I would like to consult regarding trade documentation and compliance services."}\n\nPlease review and advise.`
+      `Hello RC CONSULTANCY (Rohit Chaher),\nI am submitting a consultation inquiry from your website:\n\n*Name:* ${clientName}\n*Phone:* ${clientPhone}\n*Email:* ${clientEmail}\n*Service:* ${serviceName}\n\n*Requirement Details:*\n${clientMessage}\n\nPlease review and get back to me.`
     );
     return `https://wa.me/919322174270?text=${text}`;
   };
 
+  const openWhatsAppDirectly = (url: string) => {
+    if (typeof window === "undefined") return;
+    try {
+      // For mobile devices, deep-link navigation works best
+      const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
+      if (isMobile) {
+        window.location.href = url;
+      } else {
+        window.open(url, "_blank");
+      }
+    } catch (e) {
+      console.warn("Could not auto-open WhatsApp:", e);
+    }
+  };
+
   const onSubmit = async (data: ContactFormData) => {
-    // If honeypot is filled, silent exit
+    setValidationAttempted(false);
+    // Honeypot trap
     if (data.website_field_hp) {
       setIsSuccess(true);
       return;
     }
 
     setIsSubmitting(true);
-    setErrorMessage(null);
+    setSubmitErrorMessage(null);
 
-    // 1. Prepare WhatsApp URL & trigger automatically
+    // 1. Immediately prepare and launch WhatsApp
     const waUrl = generateWhatsAppUrl(data);
-    try {
-      if (typeof window !== "undefined") {
-        window.open(waUrl, "_blank");
-      }
-    } catch (e) {
-      console.warn("Auto popup blocked by browser, manual button available on confirmation", e);
-    }
+    openWhatsAppDirectly(waUrl);
 
     // 2. Dispatch to email backend (/api/contact -> rc.consultancy@outlook.com)
     try {
@@ -95,7 +130,7 @@ export function ContactForm({ preselectedService }: { preselectedService?: strin
       const resData = await response.json();
 
       if (!response.ok && !resData.success) {
-        throw new Error(resData.error || "Failed to submit inquiry. Please try again.");
+        throw new Error(resData.error || "Failed to submit inquiry via email.");
       }
 
       setSubmittedData(data);
@@ -103,34 +138,53 @@ export function ContactForm({ preselectedService }: { preselectedService?: strin
       reset();
     } catch (err: unknown) {
       const errorMsg =
-        err instanceof Error ? err.message : "Something went wrong. Please try again.";
-      // Even if network fails, ensure WhatsApp has recorded the lead
+        err instanceof Error ? err.message : "Something went wrong. Please check your connection.";
+      console.warn("Submission notice:", errorMsg);
+      // Ensure lead is not lost and user is acknowledged
       setSubmittedData(data);
       setIsSuccess(true);
-      setErrorMessage(errorMsg);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleQuickWhatsApp = () => {
+  const onInvalidSubmit = (fieldErrors: FieldErrors<ContactFormData>) => {
+    setValidationAttempted(true);
+    // Scroll smoothly to first invalid element
+    const errorKeys = Object.keys(fieldErrors);
+    if (errorKeys.length > 0) {
+      const firstId = errorKeys[0];
+      const element = document.getElementById(firstId);
+      if (element) {
+        element.focus();
+        element.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+  };
+
+  // Instant direct WhatsApp action that never blocks on form validation
+  const handleDirectWhatsAppClick = () => {
     const values = getValues();
     const waUrl = generateWhatsAppUrl(values);
-    if (typeof window !== "undefined") {
-      window.open(waUrl, "_blank");
-    }
+    openWhatsAppDirectly(waUrl);
   };
 
   const handleMailtoFallback = () => {
     const values = submittedData || getValues();
-    const subject = encodeURIComponent(`Consultation Inquiry: ${values.service || "Import Export"}`);
+    const serviceName = values.service || "Import Export";
+    const subject = encodeURIComponent(`Consultation Inquiry: ${serviceName}`);
     const body = encodeURIComponent(
-      `Name: ${values.fullName}\nPhone: ${values.phone}\nEmail: ${values.email}\nService: ${values.service}\n\nMessage:\n${values.message}`
+      `Name: ${values.fullName || "Client"}\nPhone: ${values.phone || ""}\nEmail: ${values.email || ""}\nService: ${serviceName}\n\nMessage:\n${values.message || "Consultation requested."}`
     );
     window.location.href = `mailto:rc.consultancy@outlook.com?subject=${subject}&body=${body}`;
   };
 
+  // -------------------------------------------------------------
+  // SUCCESS VIEW (Confirmation of dual delivery: Email & WhatsApp)
+  // -------------------------------------------------------------
   if (isSuccess) {
+    const finalWaUrl = generateWhatsAppUrl(submittedData || {});
+
     return (
       <div className="rounded-3xl border border-teal-200 bg-gradient-to-b from-[#E7F6F7]/80 to-white p-8 sm:p-10 shadow-lg text-center animate-in fade-in duration-300">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#0E9AA7] text-white shadow-md">
@@ -145,7 +199,7 @@ export function ContactForm({ preselectedService }: { preselectedService?: strin
           <strong className="text-[#0B2545]">Rohit Ramdas Chaher</strong>, via both official Email and WhatsApp.
         </p>
 
-        {/* Dual Delivery Status Badges */}
+        {/* Dual Delivery Verification Cards */}
         <div className="mt-6 mx-auto grid max-w-lg grid-cols-1 gap-3 sm:grid-cols-2 text-left">
           <div className="flex items-start gap-3 rounded-2xl border border-emerald-200 bg-white p-4 shadow-2xs">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
@@ -168,23 +222,23 @@ export function ContactForm({ preselectedService }: { preselectedService?: strin
           </div>
         </div>
 
-        {/* Primary WhatsApp Action */}
+        {/* Big Unblockable WhatsApp Action */}
         <div className="mt-6 mx-auto max-w-lg rounded-2xl bg-white p-5 border border-[#E5E9F0] shadow-sm text-left">
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#0B2545]">
             <MessageCircle className="h-4 w-4 text-[#25D366]" />
-            <span>Instant Confirmation on WhatsApp</span>
+            <span>Connect on WhatsApp for Immediate Reply</span>
           </div>
           <p className="mt-1 text-xs text-[#64748B] leading-relaxed">
-            Click the button below if your WhatsApp chat did not open automatically:
+            If your WhatsApp chat did not open automatically, click the button below to start conversation directly with Rohit Chaher:
           </p>
           <a
-            href={generateWhatsAppUrl(submittedData || {})}
+            href={finalWaUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-3 flex w-full items-center justify-center gap-2.5 rounded-xl bg-[#25D366] px-5 py-3 text-sm font-bold text-white shadow-md hover:bg-[#20ba5a] active:scale-99 transition-all"
+            className="mt-3 flex w-full items-center justify-center gap-2.5 rounded-xl bg-[#25D366] px-5 py-3.5 text-sm font-bold text-white shadow-md hover:bg-[#20ba5a] active:scale-99 transition-all"
           >
             <MessageCircle className="h-5 w-5" />
-            <span>Open WhatsApp Chat (+91 93221 74270)</span>
+            <span>Open WhatsApp Chat Now (+91 93221 74270)</span>
           </a>
         </div>
 
@@ -213,9 +267,14 @@ export function ContactForm({ preselectedService }: { preselectedService?: strin
     );
   }
 
+  // -------------------------------------------------------------
+  // ACTIVE FORM VIEW
+  // -------------------------------------------------------------
+  const hasErrors = validationAttempted && Object.keys(errors).length > 0;
+
   return (
     <form
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(onSubmit, onInvalidSubmit)}
       noValidate
       className="rounded-3xl border border-[#E5E9F0] bg-white p-6 sm:p-10 shadow-sm"
     >
@@ -246,15 +305,15 @@ export function ContactForm({ preselectedService }: { preselectedService?: strin
             placeholder="e.g. Ramesh Patel"
             aria-invalid={!!errors.fullName}
             aria-describedby={errors.fullName ? "fullName-error" : undefined}
-            className={`mt-1.5 block w-full rounded-xl border px-4 py-3 text-sm text-[#334155] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0E9AA7] ${
-              errors.fullName ? "border-red-500 bg-red-50/20" : "border-[#E5E9F0] bg-[#F7F9FB]/40"
+            className={`mt-1.5 block w-full rounded-xl border px-4 py-3 text-sm text-[#334155] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0E9AA7] transition-colors ${
+              errors.fullName ? "border-red-500 bg-red-50/40" : "border-[#CBD5E1] bg-[#F8FAFC]"
             }`}
             {...register("fullName")}
           />
           {errors.fullName && (
-            <p id="fullName-error" className="mt-1 text-xs text-red-600 flex items-center gap-1">
-              <AlertCircle className="h-3.5 w-3.5" />
-              {errors.fullName.message}
+            <p id="fullName-error" className="mt-1 text-xs text-red-600 flex items-center gap-1 font-medium">
+              <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+              <span>{errors.fullName.message}</span>
             </p>
           )}
         </div>
@@ -275,15 +334,15 @@ export function ContactForm({ preselectedService }: { preselectedService?: strin
               placeholder="+91 98765 43210"
               aria-invalid={!!errors.phone}
               aria-describedby={errors.phone ? "phone-error" : undefined}
-              className={`mt-1.5 block w-full rounded-xl border px-4 py-3 text-sm text-[#334155] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0E9AA7] ${
-                errors.phone ? "border-red-500 bg-red-50/20" : "border-[#E5E9F0] bg-[#F7F9FB]/40"
+              className={`mt-1.5 block w-full rounded-xl border px-4 py-3 text-sm text-[#334155] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0E9AA7] transition-colors ${
+                errors.phone ? "border-red-500 bg-red-50/40" : "border-[#CBD5E1] bg-[#F8FAFC]"
               }`}
               {...register("phone")}
             />
             {errors.phone && (
-              <p id="phone-error" className="mt-1 text-xs text-red-600 flex items-center gap-1">
-                <AlertCircle className="h-3.5 w-3.5" />
-                {errors.phone.message}
+              <p id="phone-error" className="mt-1 text-xs text-red-600 flex items-center gap-1 font-medium">
+                <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+                <span>{errors.phone.message}</span>
               </p>
             )}
           </div>
@@ -302,15 +361,15 @@ export function ContactForm({ preselectedService }: { preselectedService?: strin
               placeholder="name@company.com"
               aria-invalid={!!errors.email}
               aria-describedby={errors.email ? "email-error" : undefined}
-              className={`mt-1.5 block w-full rounded-xl border px-4 py-3 text-sm text-[#334155] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0E9AA7] ${
-                errors.email ? "border-red-500 bg-red-50/20" : "border-[#E5E9F0] bg-[#F7F9FB]/40"
+              className={`mt-1.5 block w-full rounded-xl border px-4 py-3 text-sm text-[#334155] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0E9AA7] transition-colors ${
+                errors.email ? "border-red-500 bg-red-50/40" : "border-[#CBD5E1] bg-[#F8FAFC]"
               }`}
               {...register("email")}
             />
             {errors.email && (
-              <p id="email-error" className="mt-1 text-xs text-red-600 flex items-center gap-1">
-                <AlertCircle className="h-3.5 w-3.5" />
-                {errors.email.message}
+              <p id="email-error" className="mt-1 text-xs text-red-600 flex items-center gap-1 font-medium">
+                <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+                <span>{errors.email.message}</span>
               </p>
             )}
           </div>
@@ -328,8 +387,8 @@ export function ContactForm({ preselectedService }: { preselectedService?: strin
             id="service"
             aria-invalid={!!errors.service}
             aria-describedby={errors.service ? "service-error" : undefined}
-            className={`mt-1.5 block w-full rounded-xl border px-4 py-3 text-sm text-[#334155] focus:outline-none focus:ring-2 focus:ring-[#0E9AA7] ${
-              errors.service ? "border-red-500 bg-red-50/20" : "border-[#E5E9F0] bg-[#F7F9FB]/40"
+            className={`mt-1.5 block w-full rounded-xl border px-4 py-3 text-sm text-[#334155] focus:outline-none focus:ring-2 focus:ring-[#0E9AA7] transition-colors ${
+              errors.service ? "border-red-500 bg-red-50/40" : "border-[#CBD5E1] bg-[#F8FAFC]"
             }`}
             {...register("service")}
           >
@@ -350,64 +409,73 @@ export function ContactForm({ preselectedService }: { preselectedService?: strin
             </optgroup>
           </select>
           {errors.service && (
-            <p id="service-error" className="mt-1 text-xs text-red-600 flex items-center gap-1">
-              <AlertCircle className="h-3.5 w-3.5" />
-              {errors.service.message}
+            <p id="service-error" className="mt-1 text-xs text-red-600 flex items-center gap-1 font-medium">
+              <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+              <span>{errors.service.message}</span>
             </p>
           )}
         </div>
 
-        {/* Message */}
+        {/* Message (Optional) */}
         <div>
-          <label
-            htmlFor="message"
-            className="block text-xs font-semibold uppercase tracking-wider text-[#0B2545]"
-          >
-            Requirement Details <span className="text-red-500">*</span>
-          </label>
+          <div className="flex items-center justify-between">
+            <label
+              htmlFor="message"
+              className="block text-xs font-semibold uppercase tracking-wider text-[#0B2545]"
+            >
+              Requirement Details
+            </label>
+            <span className="text-[11px] text-[#64748B] font-medium">(Optional)</span>
+          </div>
           <textarea
             id="message"
-            rows={4}
-            placeholder="Please mention your commodities, current stage (new setup, renewal, query resolution), or any specific port requirement..."
-            aria-invalid={!!errors.message}
-            aria-describedby={errors.message ? "message-error" : undefined}
-            className={`mt-1.5 block w-full rounded-xl border px-4 py-3 text-sm text-[#334155] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0E9AA7] ${
-              errors.message ? "border-red-500 bg-red-50/20" : "border-[#E5E9F0] bg-[#F7F9FB]/40"
-            }`}
+            rows={3}
+            placeholder="Mention your commodities, consignment stage, or specific compliance requirement..."
+            className="mt-1.5 block w-full rounded-xl border border-[#CBD5E1] bg-[#F8FAFC] px-4 py-3 text-sm text-[#334155] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0E9AA7]"
             {...register("message")}
           />
-          {errors.message && (
-            <p id="message-error" className="mt-1 text-xs text-red-600 flex items-center gap-1">
-              <AlertCircle className="h-3.5 w-3.5" />
-              {errors.message.message}
-            </p>
-          )}
         </div>
 
-        {/* Guaranteed Dual Dispatch Banner */}
-        <div className="rounded-2xl border border-teal-200/80 bg-[#E7F6F7]/50 p-3.5 text-xs text-[#0B2545] flex items-center gap-2.5">
+        {/* Guaranteed Dual Dispatch Notice */}
+        <div className="rounded-2xl border border-teal-200/80 bg-[#E7F6F7]/60 p-3.5 text-xs text-[#0B2545] flex items-center gap-2.5">
           <ShieldCheck className="h-5 w-5 text-[#0E9AA7] shrink-0" />
           <span>
             Delivered directly to <strong>rc.consultancy@outlook.com</strong> & WhatsApp <strong>+91 93221 74270</strong>.
           </span>
         </div>
 
+        {/* Validation Error Alert Box (displayed prominently above button if user clicks with missing fields) */}
+        {hasErrors && (
+          <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-xs text-red-800 animate-in fade-in duration-200">
+            <div className="flex items-center gap-2 font-bold text-red-900">
+              <AlertCircle className="h-4 w-4 text-red-600 shrink-0" />
+              <span>Please fill in the required fields before submitting:</span>
+            </div>
+            <ul className="mt-2 list-disc list-inside space-y-1 pl-1 text-red-700 font-medium">
+              {errors.fullName && <li>Full Name: {errors.fullName.message}</li>}
+              {errors.phone && <li>Phone Number: {errors.phone.message}</li>}
+              {errors.email && <li>Email Address: {errors.email.message}</li>}
+              {errors.service && <li>Service: {errors.service.message}</li>}
+            </ul>
+          </div>
+        )}
+
         {/* Primary Submit Button */}
         <div>
           <button
             type="submit"
             disabled={isSubmitting}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#0B2545] px-6 py-4 text-sm font-bold text-white shadow-md transition-all hover:bg-[#133966] hover:shadow-lg active:scale-99 disabled:opacity-70"
+            className="inline-flex w-full cursor-pointer items-center justify-center gap-2.5 rounded-xl bg-[#0B2545] px-6 py-4 text-sm font-bold text-white shadow-md transition-all hover:bg-[#133966] hover:shadow-lg active:scale-98 disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {isSubmitting ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin text-[#0E9AA7]" />
                 <span>Dispatching Inquiry (Email & WhatsApp)...</span>
               </>
             ) : (
               <>
                 <span>Submit Inquiry via Email & WhatsApp</span>
-                <Send className="h-4 w-4" />
+                <Send className="h-4 w-4 text-[#38BDF8]" />
               </>
             )}
           </button>
@@ -421,14 +489,14 @@ export function ContactForm({ preselectedService }: { preselectedService?: strin
           </span>
         </div>
 
-        {/* Secondary Direct WhatsApp button */}
+        {/* Secondary Direct WhatsApp button - NEVER BLOCKS, ALWAYS OPENS WHATSAPP */}
         <button
           type="button"
-          onClick={handleQuickWhatsApp}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-xs sm:text-sm font-bold text-emerald-800 shadow-2xs hover:bg-emerald-100 transition-colors"
+          onClick={handleDirectWhatsAppClick}
+          className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-emerald-400 bg-emerald-50 px-4 py-3 text-xs sm:text-sm font-bold text-emerald-800 shadow-2xs hover:bg-emerald-100 active:scale-98 transition-all"
         >
           <MessageCircle className="h-4 w-4 text-[#25D366]" />
-          <span>Direct Quick Chat on WhatsApp (+91 93221 74270)</span>
+          <span>Quick Chat on WhatsApp (+91 93221 74270)</span>
         </button>
       </div>
     </form>
