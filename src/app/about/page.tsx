@@ -178,61 +178,88 @@ export default function AboutPage() {
       </section>
 
       {/* Leadership Section with Photo & Updated Designation */}
-      <section className="border-t border-[#E5E9F0] bg-[#F7F9FB] py-16 sm:py-24">
+      <section className="border-t border-[#E2E8F0] bg-gradient-to-b from-[#F8FAFC] via-[#F1F5F9]/60 to-[#F8FAFC] py-20 sm:py-28">
         <div className="mx-auto max-w-[1240px] px-4 sm:px-6 lg:px-8">
           <SectionHeading
             badge="Leadership"
-            title="Principal Consultant"
-            subtitle="Direct responsibility for trade documentation accuracy and regulatory advisory."
+            title="Principal Consultant & Advisory"
+            subtitle="Direct responsibility for trade documentation accuracy, verified filings, and regulatory compliance."
+            align="center"
           />
 
-          <div className="mt-10 mx-auto max-w-3xl rounded-2xl border border-[#E5E9F0] bg-white p-6 sm:p-10 shadow-xs">
-            <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
-              {/* Photo */}
-              <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-2xl border-2 border-[#E5E9F0] bg-[#F7F9FB] shadow-xs">
-                <Image
-                  src={companyData.founder.photo}
-                  alt={companyData.founder.name}
-                  width={112}
-                  height={112}
-                  className="h-full w-full object-cover"
-                />
-              </div>
-
-              <div className="flex-1">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="text-xs font-bold uppercase tracking-wider text-[#0E9AA7]">
-                    Trade Advisory & Filing
-                  </span>
-                  <a
-                    href={companyData.contact.instagram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 rounded-full border border-[#E1306C]/30 bg-[#FDF2F4] px-3 py-1 text-xs font-semibold text-[#E1306C] hover:bg-[#FCE7EB] transition-colors"
-                  >
-                    <InstagramIcon className="h-3.5 w-3.5" />
-                    <span>Instagram Profile</span>
-                  </a>
+          <div className="mt-12 mx-auto max-w-4xl overflow-hidden rounded-3xl border border-[#E2E8F0] bg-white shadow-xl shadow-slate-200/60">
+            <div className="p-8 sm:p-12 lg:p-14">
+              <div className="flex flex-col items-center gap-8 md:flex-row md:items-start lg:gap-12">
+                {/* Photo */}
+                <div className="flex flex-col items-center shrink-0">
+                  <div className="relative h-44 w-44 overflow-hidden rounded-2xl border-2 border-white bg-[#F7F9FB] shadow-md ring-1 ring-[#0B2545]/10 sm:h-52 sm:w-52 lg:h-56 lg:w-56">
+                    <Image
+                      src={companyData.founder.photo}
+                      alt={companyData.founder.name}
+                      width={240}
+                      height={240}
+                      priority
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  <div className="mt-3.5 inline-flex items-center gap-1.5 rounded-full border border-emerald-200/80 bg-emerald-50/90 px-3 py-1 text-xs font-medium text-emerald-800">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>Direct Regulatory Oversight</span>
+                  </div>
                 </div>
 
-                <h3 className="mt-1 font-heading text-2xl font-bold text-[#0B2545]">
-                  {companyData.founder.name}
-                </h3>
-                <p className="text-xs font-semibold text-[#0B2545]">
-                  {companyData.founder.designation}
-                </p>
-                <p className="mt-3 text-sm leading-relaxed text-[#334155]">
-                  {companyData.founder.shortBio}
-                </p>
+                {/* Content */}
+                <div className="flex-1 text-center md:text-left">
+                  <div className="flex flex-col items-center justify-between gap-3 sm:flex-row md:items-center">
+                    <span className="inline-flex items-center rounded-full bg-[#0E9AA7]/10 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[#0E9AA7]">
+                      Trade Advisory & Operations
+                    </span>
+                    <a
+                      href={companyData.contact.instagram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 rounded-full border border-[#E1306C]/30 bg-[#FDF2F4] px-4 py-1.5 text-xs font-semibold text-[#E1306C] shadow-xs transition-all hover:bg-[#E1306C] hover:text-white"
+                    >
+                      <InstagramIcon className="h-3.5 w-3.5" />
+                      <span>Follow on Instagram</span>
+                    </a>
+                  </div>
+
+                  <h3 className="mt-4 font-heading text-2xl font-bold text-[#0B2545] sm:text-3xl lg:text-4xl">
+                    {companyData.founder.name}
+                  </h3>
+                  <p className="mt-1 text-sm font-semibold text-[#0E9AA7] sm:text-base">
+                    {companyData.founder.designation}
+                  </p>
+                  <p className="mt-4 text-sm leading-relaxed text-[#475569] sm:text-base">
+                    {companyData.founder.shortBio}
+                  </p>
+
+                  {/* Trust Highlights */}
+                  <div className="mt-6 grid grid-cols-1 gap-2.5 pt-5 border-t border-slate-100 sm:grid-cols-3">
+                    <div className="flex items-center justify-center md:justify-start gap-2 rounded-xl bg-slate-50 px-3 py-2 text-xs font-medium text-slate-700">
+                      <ShieldCheck className="h-4 w-4 text-[#0E9AA7] shrink-0" />
+                      <span>Statutory Accuracy</span>
+                    </div>
+                    <div className="flex items-center justify-center md:justify-start gap-2 rounded-xl bg-slate-50 px-3 py-2 text-xs font-medium text-slate-700">
+                      <FileCheck className="h-4 w-4 text-[#0E9AA7] shrink-0" />
+                      <span>Verified Trade Filing</span>
+                    </div>
+                    <div className="flex items-center justify-center md:justify-start gap-2 rounded-xl bg-slate-50 px-3 py-2 text-xs font-medium text-slate-700">
+                      <Users className="h-4 w-4 text-[#0E9AA7] shrink-0" />
+                      <span>Transparent Guidance</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-[#E5E9F0] pt-5 text-xs text-[#64748B]">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[#E5E9F0] bg-[#F8FAFC] px-8 py-4 sm:px-12 sm:py-5 text-xs sm:text-sm text-[#475569]">
+              <div className="flex items-center gap-2.5 font-medium">
                 <Building2 className="h-4 w-4 text-[#0B2545]" />
                 <span>Office: Bhiwandi, Thane, Maharashtra</span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5 font-medium">
                 <Calendar className="h-4 w-4 text-[#0B2545]" />
                 <span>Established {companyData.established}</span>
               </div>

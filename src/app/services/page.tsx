@@ -21,7 +21,7 @@ import {
 export const metadata: Metadata = {
   title: "Documentation Services | RC CONSULTANCY",
   description:
-    "Comprehensive directory of all documentation services provided by RC CONSULTANCY: Trade Agreements, LMPC Packaging, Import Monitoring Systems, EPR Registration, Port ICEGATE, DGFT, RCMC Councils, and Hazardous Goods.",
+    "Comprehensive directory of all documentation services provided by RC CONSULTANCY: Trade Agreements, LMPC Packaging, Import Monitoring Systems, EPR Registration, Port ICEGATE, DGFT, and RCMC Councils.",
 };
 
 export default function ServicesPage() {
@@ -207,9 +207,9 @@ export default function ServicesPage() {
               ))}
             </div>
 
-            {/* Column 5: Hazardous & Dangerous Goods + Serviceable Port */}
+            {/* Column 5: Serviceable Port & Fast Consultation */}
             <div className="space-y-6">
-              {documentationCategories.slice(7, 9).map((cat) => (
+              {documentationCategories.slice(7, 8).map((cat) => (
                 <div key={cat.id} id={cat.id} className="rounded-xl border border-[#E5E9F0] bg-white overflow-hidden shadow-xs hover:shadow-md transition-shadow">
                   <div className="bg-[#FAF0F0] border-b border-[#F3D5D5] px-3.5 py-3">
                     <h3 className="font-heading text-xs font-bold text-[#991B1B] uppercase tracking-wide">
@@ -235,6 +235,32 @@ export default function ServicesPage() {
                   </div>
                 </div>
               ))}
+
+              {/* Consultation Assistance Box */}
+              <div className="rounded-xl border border-teal-200 bg-gradient-to-br from-[#E7F6F7] to-white p-5 text-center shadow-xs">
+                <h4 className="font-heading text-sm font-bold text-[#0B2545]">
+                  Need Custom Trade Documentation?
+                </h4>
+                <p className="mt-2 text-xs text-[#64748B] leading-relaxed">
+                  We handle custom DGFT registrations, ministry clearances, and port applications tailored to your consignment.
+                </p>
+                <div className="mt-4 space-y-2">
+                  <Link
+                    href="/contact"
+                    className="block rounded-lg bg-[#0B2545] px-3 py-2 text-xs font-semibold text-white shadow-xs hover:bg-[#133966] transition-colors"
+                  >
+                    Request Consultation Form
+                  </Link>
+                  <a
+                    href="https://wa.me/919322174270?text=Hello%20RC%20Consultancy,%20I%20need%20assistance%20with%20custom%20import-export%20documentation."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block rounded-lg border border-[#25D366] bg-white px-3 py-2 text-xs font-semibold text-[#25D366] hover:bg-[#F0FDF4] transition-colors"
+                  >
+                    WhatsApp: +91 93221 74270
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>

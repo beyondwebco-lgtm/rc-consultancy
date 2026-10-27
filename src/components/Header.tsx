@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "./Logo";
 import { InstagramIcon } from "./InstagramIcon";
-import { Menu, X, ArrowRight, Phone, ChevronDown, ChevronRight, Layers } from "lucide-react";
+import { Menu, X, ArrowRight, Phone, ChevronDown, ChevronRight, Layers, MessageCircle } from "lucide-react";
 import { companyData } from "@/data/company";
 import { documentationCategories } from "@/data/documentationCategories";
 
@@ -240,16 +240,16 @@ export function Header() {
                     ))}
                   </div>
 
-                  {/* Column 5: Hazardous & Dangerous Goods + Serviceable Port */}
+                  {/* Column 5: Serviceable Port & Direct Advisory */}
                   <div className="space-y-4">
-                    {documentationCategories.slice(7, 9).map((cat) => (
+                    {documentationCategories.slice(7, 8).map((cat) => (
                       <div key={cat.id} className="rounded-xl border border-[#E5E9F0] bg-[#FAFBFC] overflow-hidden shadow-2xs">
                         <div className="bg-[#FAF0F0] border-b border-[#F3D5D5] px-3 py-2">
                           <h4 className="font-heading text-xs font-bold text-[#991B1B] uppercase tracking-wide">
                             {cat.title}
                           </h4>
                         </div>
-                        <ul className="divide-y divide-[#E5E9F0] text-[11px] text-[#334155] bg-white max-h-[200px] overflow-y-auto">
+                        <ul className="divide-y divide-[#E5E9F0] text-[11px] text-[#334155] bg-white max-h-[220px] overflow-y-auto">
                           {cat.items.map((item, idx) => (
                             <li key={idx} className="hover:bg-[#F0FDF4] transition-colors">
                               <Link
@@ -264,6 +264,26 @@ export function Header() {
                         </ul>
                       </div>
                     ))}
+
+                    {/* Quick Consultation Promo Box */}
+                    <div className="rounded-xl border border-teal-200/80 bg-gradient-to-br from-[#E7F6F7] to-white p-3 text-center shadow-2xs">
+                      <p className="font-heading text-xs font-bold text-[#0B2545]">
+                        Need Advisory Assistance?
+                      </p>
+                      <p className="mt-1 text-[11px] text-[#64748B] leading-tight">
+                        Direct document review by Rohit Ramdas Chaher
+                      </p>
+                      <a
+                        href={companyData.contact.whatsappHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-2.5 inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-[#25D366] px-2.5 py-1.5 text-[11px] font-bold text-white shadow-xs hover:bg-[#20ba5a] transition-colors"
+                        onClick={() => setDropdownOpen(false)}
+                      >
+                        <MessageCircle className="h-3.5 w-3.5" />
+                        <span>Chat on WhatsApp</span>
+                      </a>
+                    </div>
                   </div>
                 </div>
 
