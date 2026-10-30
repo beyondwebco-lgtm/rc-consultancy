@@ -178,7 +178,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 2. PROVEN TRACK RECORD / STATS SECTION (User requested: Experience 8 months+, Documents Completed 250+, Business Clients Served 50+) */}
+      {/* 2. PROVEN TRACK RECORD / STATS SECTION (User requested: Experience 1 year+, Documents Completed 250+, Business Clients Served 50+) */}
       <section className="relative z-20 -mt-6 sm:-mt-8 mx-auto max-w-[1240px] px-4 sm:px-6 lg:px-8 w-full">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 rounded-2xl border border-[#E5E9F0] bg-white p-4 sm:p-6 shadow-xl">
           {companyData.stats.map((stat, idx) => (

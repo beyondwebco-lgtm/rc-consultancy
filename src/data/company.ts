@@ -13,7 +13,7 @@ export const companyData = {
   stats: [
     {
       label: "Experience",
-      value: "8 months+",
+      value: "1 year+",
       description: "Dedicated foreign trade & compliance consultancy",
     },
     {

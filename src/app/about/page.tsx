@@ -38,7 +38,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Stats Bar (8 months+, 250+ documents, 50+ clients) */}
+      {/* Stats Bar (1 year+, 250+ documents, 50+ clients) */}
       <section className="bg-white py-8 border-b border-[#E5E9F0]">
         <div className="mx-auto max-w-[1240px] px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">

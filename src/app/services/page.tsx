@@ -45,7 +45,7 @@ export default function ServicesPage() {
             <div className="flex items-center gap-2">
               <span className="flex h-2.5 w-2.5 rounded-full bg-[#0E9AA7]" />
               <span className="font-bold text-[#0B2545]">Experience:</span>
-              <span>8 months+ dedicated foreign trade consultancy</span>
+              <span>1 year+ dedicated foreign trade consultancy</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="flex h-2.5 w-2.5 rounded-full bg-[#0E9AA7]" />
